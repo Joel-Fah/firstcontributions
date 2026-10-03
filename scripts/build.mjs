@@ -26,7 +26,7 @@ function joinDates() {
       const [date, ...files] = chunk.trim().split('\n');
       for (const file of files) dates[path.basename(file, '.yml').toLowerCase()] = date;
     }
-  } catch {}
+  } catch { }
   return dates;
 }
 
@@ -46,7 +46,14 @@ await enrichContributions(contributors, { token: process.env.GITHUB_TOKEN, offli
 await rm(OUT, { recursive: true, force: true });
 await mkdir(OUT, { recursive: true });
 await copyFile('site/style.css', path.join(OUT, 'style.css'));
-await writeFile(path.join(OUT, 'index.html'), renderIndex({ config, contributors }));
+for (const locale of LOCALES) {
+  const localeDir = locale === DEFAULT_LOCALE ? OUT : path.join(OUT, locale);
+  if (locale !== DEFAULT_LOCALE) {
+    await mkdir(localeDir, { recursive: true });
+    await copyFile('site/style.css', path.join(localeDir, 'style.css'));
+  }
+  await writeFile(path.join(localeDir, 'index.html'), renderIndex({ config, contributors, locale }));
+}
 await writeFile(path.join(OUT, '404.html'), renderNotFound({ config }));
 await writeFile(path.join(OUT, 'contributors.json'), JSON.stringify(contributors, null, 2));
 for (const contributor of contributors) {
