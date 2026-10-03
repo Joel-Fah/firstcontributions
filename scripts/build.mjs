@@ -8,6 +8,7 @@ import config from '../site.config.mjs';
 import { CONTRIBUTORS_DIR, loadContributors } from '../lib/contributors.mjs';
 import { enrichContributions } from '../lib/github.mjs';
 import { renderIndex, renderNotFound, renderProfile } from '../lib/render.mjs';
+import { DEFAULT_LOCALE, LOCALES } from '../lib/i18n.mjs';
 
 const OUT = 'dist';
 const offline = process.argv.includes('--offline');
