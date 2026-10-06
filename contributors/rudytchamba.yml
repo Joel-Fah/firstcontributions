@@ -1,0 +1,10 @@
+github: RudyTchamba
+name: Rudy Tchamba
+# The lines below are optional. Replace the example values or delete the lines.
+bio: I am a computer science student at the university of Yaounde 1
+location: Yaounde, Cameroon
+website: https://www.linkedin.com/in/rudy-itiel/
+contributions:
+  - https://github.com/osscameroon/firstcontributions/pull/7
+  # Later, list issues or pull requests you worked on, one per line, like this:
+  # - https://github.com/osscameroon/js-generator/pull/1

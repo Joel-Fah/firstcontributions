@@ -2,8 +2,8 @@ name: Check contribution
 
 # pull_request_target runs with the base repository's code and permissions, so first-time
 # contributors get feedback right away, without a maintainer approving the workflow run.
-# SECURITY: the pull request's files are checked out into ./pr and only parsed as YAML.
-# Never run scripts, npm install or builds from ./pr in this workflow.
+# SECURITY: only the base branch is checked out. The pull request's files are downloaded
+# through the API and parsed as YAML. Never check out, install or run code from the pull request here.
 on:
   pull_request_target:
     types: [opened, synchronize, reopened]
@@ -25,14 +25,6 @@ jobs:
       - name: Check out trusted scripts (base branch)
         uses: actions/checkout@v4
 
-      - name: Check out the pull request files (data only)
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.sha }}
-          path: pr
-          persist-credentials: false
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -48,8 +40,9 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           PR_ASSOCIATION: ${{ github.event.pull_request.author_association }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           AUTO_MERGE: ${{ vars.AUTO_MERGE }}
-          PR_ROOT: pr
           REPORT_PATH: report.md
 
       - name: Comment on the pull request

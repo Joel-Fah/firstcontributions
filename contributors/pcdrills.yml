@@ -1,0 +1,9 @@
+github: pcdrills
+name: Noble Friend
+# The lines below are optional. Replace the example values or delete the lines.
+bio: I'm just a huge fan.
+location: Buea, Cameroon
+website: https://pcdrills.org
+contributions:
+  # Later, list issues or pull requests you worked on, one per line, like this:
+  # - https://github.com/osscameroon/js-generator/pull/1

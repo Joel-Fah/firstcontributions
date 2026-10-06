@@ -43,7 +43,7 @@ test('a complete file is valid', () => {
 
 test('the untouched template is rejected with helpful messages', () => {
   const errors = validateContributor(parse(contributorTemplate()), 'YOUR-GITHUB-USERNAME');
-  assert.equal(errors.length, 5);
+  assert.equal(errors.length, 2);
   assert.match(errors.join('\n'), /`github` must be your GitHub username/);
   assert.match(errors.join('\n'), /`name` still has the example value/);
 });
@@ -57,10 +57,26 @@ test('a filled-in template with optional lines deleted is valid', () => {
   assert.deepEqual(validateContributor(parse(text), 'octocat'), []);
 });
 
+test('optional fields can be left as examples, empty or "None"', async () => {
+  const text = contributorTemplate('octocat').replace('Your Name', 'Mona');
+  assert.deepEqual(validateContributor(parse(text), 'octocat'), []);
+  for (const website of ['None', 'n/a', '-', '', null]) {
+    assert.deepEqual(validateContributor({ ...valid, website, bio: 'none', location: '' }, 'octocat'), [], String(website));
+  }
+
+  const dir = await mkdtemp(path.join(tmpdir(), 'contrib-'));
+  await writeFile(path.join(dir, 'octocat.yml'), text.replace('https://example.com', 'None'));
+  const { contributor } = await readContributorFile(path.join(dir, 'octocat.yml'));
+  assert.equal(contributor.website, undefined);
+  assert.equal(contributor.bio, undefined);
+  assert.equal(contributor.location, undefined);
+});
+
 test('validation catches common mistakes', () => {
   const errorsFor = (data, login = 'octocat') => validateContributor(data, login).join('\n');
   assert.match(errorsFor({ ...valid, github: 'someoneelse' }), /must match/);
   assert.match(errorsFor({ ...valid, name: undefined }), /`name` is missing/);
+  assert.match(errorsFor({ ...valid, name: 'None' }), /`name` is missing/);
   assert.match(errorsFor({ ...valid, nmae: 'x' }), /Unknown field `nmae`/);
   assert.match(errorsFor({ ...valid, website: 'example.org' }), /starting with https/);
   assert.match(errorsFor({ ...valid, website: 'javascript:alert(1)' }), /starting with https/);
